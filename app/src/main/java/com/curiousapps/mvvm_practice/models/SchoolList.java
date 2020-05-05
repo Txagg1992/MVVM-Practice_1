@@ -10,8 +10,6 @@ import java.util.List;
 
 public class SchoolList implements Parcelable {
 
-    private List<SchoolList> schoolList;
-
     @SerializedName("dbn")
     @Expose
     private String dbn;
@@ -88,13 +86,14 @@ public class SchoolList implements Parcelable {
             return new SchoolList[size];
         }
     };
+    private List<SchoolList> schoolList;
 
     public List<SchoolList> getSchoolList() {
         return schoolList;
     }
 
-    public void setSchoolList(List<SchoolList> mSchoolList) {
-        this.schoolList = mSchoolList;
+    public void setSchoolList(List<SchoolList> schoolList) {
+        this.schoolList = schoolList;
     }
 
     public String getDbn() {
@@ -180,7 +179,7 @@ public class SchoolList implements Parcelable {
     @Override
     public String toString() {
         return "SchoolList{" +
-                "mSchoolList=" + schoolList +
+                "schoolList=" + schoolList +
                 ", dbn='" + dbn + '\'' +
                 ", school_name='" + school_name + '\'' +
                 ", phone_number='" + phone_number + '\'' +

@@ -6,16 +6,16 @@ import java.util.List;
 
 public class SchoolSatResponse {
 
-    private List<SchoolSAT> schoolSATS;
+    private SchoolSAT schoolSAT;
 
-    public List<SchoolSAT> getSchoolSATS(){
-        return schoolSATS;
+    public SchoolSAT getSchoolSATS(){
+        return schoolSAT;
     }
 
     @Override
     public String toString() {
         return "SchoolSatResponse{" +
-                "schoolSATS=" + schoolSATS +
+                "schoolSATS=" + schoolSAT +
                 '}';
     }
 }
