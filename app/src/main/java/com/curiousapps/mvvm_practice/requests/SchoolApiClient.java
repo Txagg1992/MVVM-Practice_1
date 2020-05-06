@@ -24,6 +24,42 @@ import static com.curiousapps.mvvm_practice.util.Constants.NETWORK_TIMEOUT;
 import static com.curiousapps.mvvm_practice.util.Constants.PER_PAGE;
 
 public class SchoolApiClient {
+
+    private static final String TAG = "SchoolApiClient";
+    private static SchoolApiClient instance;
+    private MutableLiveData<List<SchoolList>> mSchoolList;
+
+
+    public static SchoolApiClient getInstance(){
+        if (instance == null){
+            instance = new SchoolApiClient();
+        }
+        return instance;
+    }
+
+    private SchoolApiClient(){
+        mSchoolList = new MutableLiveData<>();
+    }
+
+    public LiveData<List<SchoolList>> getSchoolList(){
+        return mSchoolList;
+    }
+
+    public void searchSchoolsApi(){
+        final Future handler = AppExecutors.getInstance().networkIO().submit(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+
+        AppExecutors.getInstance().networkIO().schedule(new Runnable() {
+            @Override
+            public void run() {
+               handler.cancel(true);
+            }
+        }, NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
+    }
 //
 //    private static final String TAG = "SchoolApiClient";
 //    private static SchoolApiClient instance;
