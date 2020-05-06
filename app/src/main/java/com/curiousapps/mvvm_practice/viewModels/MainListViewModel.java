@@ -11,7 +11,6 @@ import java.util.List;
 
 public class MainListViewModel extends ViewModel {
 
-
     private SchoolRepository mSchoolRepository;
 
     public MainListViewModel() {
@@ -22,9 +21,7 @@ public class MainListViewModel extends ViewModel {
         return mSchoolRepository.getSchoolList();
     }
 
-//    public void searchSchoolsApi(int pageNumber) {
-//
-//        mSchoolRepository.searchSchoolsApi(pageNumber);
-//    }
-
+    public void searchSchoolsApi(int pageNumber) {
+        mSchoolRepository.searchSchoolsApi(pageNumber);
+    }
 }

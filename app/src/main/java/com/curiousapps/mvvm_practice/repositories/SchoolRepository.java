@@ -29,28 +29,11 @@ public class SchoolRepository {
         return mSchoolApiClient.getSchoolList();
     }
 
-    //    private static SchoolRepository instance;
-//    private SchoolApiClient mSchoolApiClient;
-//
-//    public static SchoolRepository getInstance(){
-//        if (instance == null){
-//            instance = new SchoolRepository();
-//        }
-//        return instance;
-//    }
-//
-//    private SchoolRepository(){
-//        mSchoolApiClient = SchoolApiClient.getInstance();
-//    }
-//
-//    public LiveData<List<SchoolList>> getSchools(){
-//        return mSchoolApiClient.getSchools();
-//    }
-//
-//    public void searchSchoolsApi(int pageNumber){
-//        if (pageNumber == 0){
-//            pageNumber = 1;
-//        }
-//        mSchoolApiClient.searchSchoolsApi(pageNumber);
-//    }
+    public void searchSchoolsApi(int pageNumber){
+        if (pageNumber == 0){
+            pageNumber = 1;
+        }
+        mSchoolApiClient.searchSchoolsApi(pageNumber);
+    }
+
 }

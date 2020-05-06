@@ -21,6 +21,8 @@ public interface SchoolApi {
             @Query("$limit") String limit,
             @Query("$offset") String offset
     );
+
+    //Get List of schools from SchoolResponse
     @GET("resource/s3k6-pzi2.json")
     Call<SchoolListResponse> searchSchoolsList(
             @Query("$$app_token") String app_token,
