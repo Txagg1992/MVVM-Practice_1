@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.curiousapps.mvvm_practice.AppExecutors;
 import com.curiousapps.mvvm_practice.models.SchoolList;
-import com.curiousapps.mvvm_practice.requests.responses.SchoolListResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +23,98 @@ import static com.curiousapps.mvvm_practice.util.Constants.NETWORK_TIMEOUT;
 import static com.curiousapps.mvvm_practice.util.Constants.PER_PAGE;
 
 public class SchoolApiClient {
+
+    private static final String TAG = "SchoolApiClient";
+    private static SchoolApiClient instance;
+    private MutableLiveData<List<SchoolList>> mSchoolList;
+
+    private RetrieveSchoolListRunnable mRetrieveSchoolListRunnable;
+
+
+    public static SchoolApiClient getInstance(){
+        if (instance == null){
+            instance = new SchoolApiClient();
+        }
+        return instance;
+    }
+
+    private SchoolApiClient(){
+        mSchoolList = new MutableLiveData<>();
+    }
+
+    public LiveData<List<SchoolList>> getSchoolList(){
+        return mSchoolList;
+    }
+
+    public void searchSchoolsApi(int pageNumber){
+        if (mRetrieveSchoolListRunnable != null){
+            mRetrieveSchoolListRunnable = null;
+        }
+        mRetrieveSchoolListRunnable = new RetrieveSchoolListRunnable(pageNumber);
+        final Future handler = AppExecutors.getInstance().networkIO().submit(mRetrieveSchoolListRunnable);
+
+        AppExecutors.getInstance().networkIO().schedule(new Runnable() {
+            @Override
+            public void run() {
+                // Let user know The network timed out
+               handler.cancel(true);
+            }
+        }, NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
+    }
+
+    private class RetrieveSchoolListRunnable implements Runnable{
+
+        private int pageNumber;
+        boolean cancelRequest;
+
+        public RetrieveSchoolListRunnable(int pageNumber) {
+            this.pageNumber = pageNumber;
+            cancelRequest = false;
+        }
+
+        @Override
+        public void run() {
+            try {
+
+                //TestClient.getInstance().checkSchoolListRetrofit();
+                Response<List<SchoolList>> response = getSchools(pageNumber).execute();
+                if (cancelRequest){
+                    return;
+                }
+                if (response.code() == 200){
+                    List<SchoolList> schoolLists = new ArrayList<>(response.body());
+                    if (pageNumber == 1){
+                        mSchoolList.postValue(schoolLists);
+                    }else {
+                        List<SchoolList> currentSchools = mSchoolList.getValue();
+                        currentSchools.add((SchoolList) schoolLists);
+                        mSchoolList.postValue(currentSchools);
+                    }
+                }else {
+                    String error = response.errorBody().string();
+                    Log.e(TAG, "runError: " + error);
+                    mSchoolList.postValue(null);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                mSchoolList.postValue(null);
+            }
+
+        }
+
+        private Call<List<SchoolList>> getSchools(int pageNumber){
+            return ServiceGenerator.getSchoolApi().searchSchools(
+              APP_TOKEN,
+              LIMIT,
+              PER_PAGE
+            );
+        }
+
+        private void cancelRequest(){
+            Log.d(TAG, "CancelRequest: cancelling search request");
+            cancelRequest = true;
+        }
+    }
 //
 //    private static final String TAG = "SchoolApiClient";
 //    private static SchoolApiClient instance;

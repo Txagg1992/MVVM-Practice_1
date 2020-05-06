@@ -2,7 +2,9 @@ package com.curiousapps.mvvm_practice.requests;
 
 import com.curiousapps.mvvm_practice.models.SchoolList;
 import com.curiousapps.mvvm_practice.models.SchoolSAT;
-import com.curiousapps.mvvm_practice.models.TypiCode;
+import com.curiousapps.mvvm_practice.models.PicObject;
+import com.curiousapps.mvvm_practice.requests.responses.SchoolListResponse;
+import com.curiousapps.mvvm_practice.requests.responses.SchoolSatResponse;
 
 import java.util.List;
 
@@ -20,6 +22,14 @@ public interface SchoolApi {
             @Query("$offset") String offset
     );
 
+    //Get List of schools from SchoolResponse
+    @GET("resource/s3k6-pzi2.json")
+    Call<SchoolListResponse> searchSchoolsList(
+            @Query("$$app_token") String app_token,
+            @Query("$limit") String limit,
+            @Query("$offset") String offset
+    );
+
     //Get Single response for SAT
     @GET("resource/f9bf-2cp4.json")
     Call <List<SchoolSAT>> getSchoolSat(
@@ -28,5 +38,12 @@ public interface SchoolApi {
             );
 
     @GET("users")
-    Call<List<TypiCode>> getUserName();
+    Call<List<PicObject>> getUserName();
+
+    @GET("resource/s3k6-pzi2.json")
+    Call<List<SchoolList>> searchOneSchool(
+            @Query("$$app_token") String app_token,
+            @Query("dbn") String dbn
+    );
+
 }
