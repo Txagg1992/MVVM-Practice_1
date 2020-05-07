@@ -1,5 +1,7 @@
 package com.curiousapps.mvvm_practice.adapters;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -8,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.curiousapps.mvvm_practice.R;
+import com.curiousapps.mvvm_practice.activities.WebViewActivity;
+import com.curiousapps.mvvm_practice.models.SchoolList;
 
 public class SchoolListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -19,10 +23,13 @@ public class SchoolListViewHolder extends RecyclerView.ViewHolder implements Vie
     TextView schoolPhone;
     ImageView schoolWebLink;
 
+    private SchoolList schoolList;
+
     OnSchoolListListener onSchoolListListener;
 
     public SchoolListViewHolder(@NonNull View itemView, OnSchoolListListener onSchoolListListener) {
         super(itemView);
+        Context context = itemView.getContext();
         schoolName = itemView.findViewById(R.id.text_view_school_name);
         schoolAddress = itemView.findViewById(R.id.text_view_school_address);
         schoolCity = itemView.findViewById(R.id.text_view_school_city);
@@ -31,7 +38,7 @@ public class SchoolListViewHolder extends RecyclerView.ViewHolder implements Vie
         schoolPhone = itemView.findViewById(R.id.text_view_school_phone);
         schoolWebLink = itemView.findViewById(R.id.icon_web_link);
 
-        itemView.setOnClickListener(this::onClick);
+        itemView.setOnClickListener(this);
     }
 
     @Override

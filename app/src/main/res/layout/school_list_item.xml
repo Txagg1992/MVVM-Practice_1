@@ -6,7 +6,7 @@
     app:cardCornerRadius="6dp"
     android:layout_margin="12dp"
     android:id="@+id/card_view"
-    android:elevation="8dp">
+    android:elevation="10dp">
 
     <RelativeLayout
         android:layout_width="match_parent"

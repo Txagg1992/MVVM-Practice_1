@@ -24,4 +24,8 @@ public class MainListViewModel extends ViewModel {
     public void searchSchoolsApi(int pageNumber) {
         mSchoolRepository.searchSchoolsApi(pageNumber);
     }
+
+    public boolean onBackPressed(){
+        return true;
+    }
 }

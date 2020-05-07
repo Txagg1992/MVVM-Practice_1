@@ -9,22 +9,25 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.request.RequestOptions;
 import com.curiousapps.mvvm_practice.R;
 import com.curiousapps.mvvm_practice.activities.WebViewActivity;
 import com.curiousapps.mvvm_practice.models.SchoolList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  {
 
-    private Context context;
+    private Context mContext;
+
+    private static final int SCHOOL_LIST_TYPE = 1;
+    private static final int LOADING_TYPE = 2;
 
     private List<SchoolList> mSchoolList;
     private OnSchoolListListener mOnSchoolListListener;
 
     private SchoolRecyclerViewAdapter(Context context){
-        this.context = context;
+        this.mContext = context;
     }
 
     public SchoolRecyclerViewAdapter(OnSchoolListListener mOnSchoolListListener) {
@@ -34,29 +37,81 @@ public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.school_list_item, parent, false);
-        return new SchoolListViewHolder(view, mOnSchoolListListener);
+
+        View view = null;
+        switch (viewType){
+            case SCHOOL_LIST_TYPE:{
+                view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.school_list_item, parent, false);
+                return new SchoolListViewHolder(view, mOnSchoolListListener);
+            }
+            case LOADING_TYPE:{
+                view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.layout_loading_dots, parent, false);
+                return new LoadingViewHolder(view);
+            }
+            default:{
+                view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.school_list_item, parent, false);
+                return new SchoolListViewHolder(view, mOnSchoolListListener);
+            }
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        ((SchoolListViewHolder)holder).schoolName.setText(mSchoolList.get(position).getSchool_name());
-        ((SchoolListViewHolder)holder).schoolAddress.setText(mSchoolList.get(position).getPrimary_address_line_1());
-        ((SchoolListViewHolder)holder).schoolCity.setText(mSchoolList.get(position).getCity());
-        ((SchoolListViewHolder)holder).schoolState.setText(mSchoolList.get(position).getState_code());
-        ((SchoolListViewHolder)holder).schoolZip.setText(mSchoolList.get(position).getZip());
-        ((SchoolListViewHolder)holder).schoolPhone.setText(mSchoolList.get(position).getPhone_number());
-        ((SchoolListViewHolder)holder).schoolWebLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Add intent to open web page
-                Intent intent = new Intent(context, WebViewActivity.class);
-                //putExtra
-                context.startActivity(intent);
+        Context context = holder.itemView.getContext();
+        int itemViewType = getItemViewType(position);
+        if (itemViewType == SCHOOL_LIST_TYPE){
+            ((SchoolListViewHolder)holder).schoolName.setText(mSchoolList.get(position).getSchool_name());
+            ((SchoolListViewHolder)holder).schoolAddress.setText(mSchoolList.get(position).getPrimary_address_line_1());
+            ((SchoolListViewHolder)holder).schoolCity.setText(mSchoolList.get(position).getCity());
+            ((SchoolListViewHolder)holder).schoolState.setText(mSchoolList.get(position).getState_code());
+            ((SchoolListViewHolder)holder).schoolZip.setText(mSchoolList.get(position).getZip());
+            ((SchoolListViewHolder)holder).schoolPhone.setText(mSchoolList.get(position).getPhone_number());
+            ((SchoolListViewHolder)holder).schoolWebLink.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Add intent to open web page
+                    Intent intent = new Intent(context, WebViewActivity.class);
+                    intent.putExtra("link", mSchoolList.get(position).getWebsite());
+                    context.startActivity(intent);
+                }
+            });
+
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (mSchoolList.get(position).getSchool_name().equals("Loading...")){
+            return LOADING_TYPE;
+        }else {
+            return SCHOOL_LIST_TYPE;
+        }
+    }
+
+    public void displayLoading(){
+        if (!isLoading()){
+            SchoolList schoolList = new SchoolList();
+            schoolList.setSchool_name("Loading...");
+            List<SchoolList> loadingList = new ArrayList<>();
+            loadingList.add(schoolList);
+            mSchoolList = loadingList;
+            notifyDataSetChanged();
+        }
+    }
+
+    private boolean isLoading(){
+        if (mSchoolList != null){
+            if (mSchoolList.size() > 0){
+                if (mSchoolList.get(mSchoolList.size()-1).equals("Loading...")){
+                    return true;
+                }
             }
-        });
+        }
+        return false;
     }
 
     @Override

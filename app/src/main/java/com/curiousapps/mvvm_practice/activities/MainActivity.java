@@ -45,6 +45,8 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
     }
 
     private void subscribeObservers(){
+        mSchoolRecyclerViewAdapter.displayLoading();
+
         mMainListViewModel.getSchoolList().observe(this, new Observer<List<SchoolList>>() {
             @Override
             public void onChanged(List<SchoolList> schoolLists) {
@@ -62,6 +64,8 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
         mRecyclerView.setAdapter(mSchoolRecyclerViewAdapter);
     }
 
+
+
     private void searchSchoolsApi(int pageNumber) {
         mMainListViewModel.searchSchoolsApi(pageNumber);
     }
@@ -70,9 +74,7 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
         searchSchoolsApi(1);
 
         //TestClient.getInstance().checkSchoolListRetrofit();
-
         //TestClient.getInstance().checkSingleItemFromListRetrofit();
-
         //TestClient.getInstance().checkSchoolSATRetrofit();
 
     }
@@ -80,5 +82,14 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
     @Override
     public void onSchoolClick(int position) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mMainListViewModel.onBackPressed()){
+            super.onBackPressed();
+        }else {
+            finish();
+        }
     }
 }
