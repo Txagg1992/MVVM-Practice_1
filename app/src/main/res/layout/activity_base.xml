@@ -10,7 +10,7 @@
         android:id="@+id/activity_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#c3b091">
+        android:background="@drawable/gradient">
 
         <TextView
             android:id="@+id/search_text_view"
