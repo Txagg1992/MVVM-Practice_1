@@ -1,7 +1,11 @@
 package com.curiousapps.mvvm_practice.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,6 +40,8 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
         initRecyclerView();
         subscribeObservers();
         testRetrofitReqs();
+
+        setSupportActionBar(findViewById(R.id.tool_bar));
 //        findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -46,6 +52,7 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
 
     private void subscribeObservers(){
         mSchoolRecyclerViewAdapter.displayLoading();
+        mMainListViewModel.setIsPerformingQuery(false);
 
         mMainListViewModel.getSchoolList().observe(this, new Observer<List<SchoolList>>() {
             @Override
@@ -91,5 +98,20 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
         }else {
             finish();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_schools){
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.school_menu, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 }

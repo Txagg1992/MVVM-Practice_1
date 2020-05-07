@@ -36,4 +36,8 @@ public class SchoolRepository {
         mSchoolApiClient.searchSchoolsApi(pageNumber);
     }
 
+    public void cancelRequest(){
+        mSchoolApiClient.cancelRequest();
+    }
+
 }

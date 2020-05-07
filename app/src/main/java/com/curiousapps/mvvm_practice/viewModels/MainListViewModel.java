@@ -12,9 +12,11 @@ import java.util.List;
 public class MainListViewModel extends ViewModel {
 
     private SchoolRepository mSchoolRepository;
+    private boolean mIsPerformingQuery;
 
     public MainListViewModel() {
         mSchoolRepository = SchoolRepository.getInstance();
+        mIsPerformingQuery = false;
     }
 
     public LiveData<List<SchoolList>> getSchoolList() {
@@ -22,10 +24,23 @@ public class MainListViewModel extends ViewModel {
     }
 
     public void searchSchoolsApi(int pageNumber) {
+        mIsPerformingQuery = true;
         mSchoolRepository.searchSchoolsApi(pageNumber);
     }
 
     public boolean onBackPressed(){
+        if (mIsPerformingQuery){
+            mSchoolRepository.cancelRequest();
+            mIsPerformingQuery = false;
+        }
         return true;
+    }
+
+    public void setIsPerformingQuery(Boolean isPerformingQuery){
+        mIsPerformingQuery = isPerformingQuery;
+    }
+
+    public boolean isPerformingQuery(){
+        return mIsPerformingQuery;
     }
 }

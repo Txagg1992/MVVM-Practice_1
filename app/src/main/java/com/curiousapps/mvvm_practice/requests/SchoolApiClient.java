@@ -115,6 +115,12 @@ public class SchoolApiClient {
             cancelRequest = true;
         }
     }
+
+    public void cancelRequest(){
+        if (mRetrieveSchoolListRunnable != null){
+            mRetrieveSchoolListRunnable.cancelRequest();
+        }
+    }
 //
 //    private static final String TAG = "SchoolApiClient";
 //    private static SchoolApiClient instance;
