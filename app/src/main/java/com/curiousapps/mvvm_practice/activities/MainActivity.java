@@ -69,16 +69,26 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mSchoolRecyclerViewAdapter = new SchoolRecyclerViewAdapter(this);
         mRecyclerView.setAdapter(mSchoolRecyclerViewAdapter);
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (!mRecyclerView.canScrollVertically(1)) {
+                    //search next page
+                    mMainListViewModel.searchNextPage();
+                }
+            }
+        });
     }
 
 
 
-    private void searchSchoolsApi(int pageNumber) {
-        mMainListViewModel.searchSchoolsApi(pageNumber);
+    private void searchSchoolsApi(int limit, int offset) {
+        mMainListViewModel.searchSchoolsApi(limit, offset);
     }
 
     private void testRetrofitReqs() {
-        searchSchoolsApi(1);
+        searchSchoolsApi(20, 1);
 
         //TestClient.getInstance().checkSchoolListRetrofit();
         //TestClient.getInstance().checkSingleItemFromListRetrofit();
@@ -88,7 +98,9 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
 
     @Override
     public void onSchoolClick(int position) {
-
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("schoolList" , mSchoolRecyclerViewAdapter.getSelectedSchool(position));
+        startActivity(intent);
     }
 
     @Override
@@ -103,6 +115,7 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_schools){
+            //searchSchoolsApi(1);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }

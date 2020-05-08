@@ -29,6 +29,8 @@ public class SchoolListViewHolder extends RecyclerView.ViewHolder implements Vie
 
     public SchoolListViewHolder(@NonNull View itemView, OnSchoolListListener onSchoolListListener) {
         super(itemView);
+        this.onSchoolListListener = onSchoolListListener;
+
         Context context = itemView.getContext();
         schoolName = itemView.findViewById(R.id.text_view_school_name);
         schoolAddress = itemView.findViewById(R.id.text_view_school_address);

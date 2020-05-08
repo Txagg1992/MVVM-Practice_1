@@ -18,6 +18,7 @@ import retrofit2.Response;
 
 import static com.curiousapps.mvvm_practice.util.Constants.APP_TOKEN;
 import static com.curiousapps.mvvm_practice.util.Constants.LIMIT;
+import static com.curiousapps.mvvm_practice.util.Constants.OFFSET;
 import static com.curiousapps.mvvm_practice.util.Constants.PER_PAGE;
 
 public class TestClient {
@@ -107,7 +108,7 @@ public class TestClient {
         Call<List<SchoolList>> responseCall = schoolApi.searchSchools(
                 APP_TOKEN,
                 LIMIT,
-                PER_PAGE
+                OFFSET
         );
 
         responseCall.enqueue(new Callback<List<SchoolList>>() {

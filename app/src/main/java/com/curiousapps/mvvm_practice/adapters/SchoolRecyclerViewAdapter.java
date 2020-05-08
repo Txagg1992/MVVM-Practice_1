@@ -12,11 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.curiousapps.mvvm_practice.R;
 import com.curiousapps.mvvm_practice.activities.WebViewActivity;
 import com.curiousapps.mvvm_practice.models.SchoolList;
+import com.curiousapps.mvvm_practice.util.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  {
+public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
 
@@ -26,7 +27,7 @@ public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
     private List<SchoolList> mSchoolList;
     private OnSchoolListListener mOnSchoolListListener;
 
-    private SchoolRecyclerViewAdapter(Context context){
+    private SchoolRecyclerViewAdapter(Context context) {
         this.mContext = context;
     }
 
@@ -39,18 +40,18 @@ public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view = null;
-        switch (viewType){
-            case SCHOOL_LIST_TYPE:{
+        switch (viewType) {
+            case SCHOOL_LIST_TYPE: {
                 view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.school_list_item, parent, false);
                 return new SchoolListViewHolder(view, mOnSchoolListListener);
             }
-            case LOADING_TYPE:{
+            case LOADING_TYPE: {
                 view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.layout_loading_dots, parent, false);
                 return new LoadingViewHolder(view);
             }
-            default:{
+            default: {
                 view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.school_list_item, parent, false);
                 return new SchoolListViewHolder(view, mOnSchoolListListener);
@@ -63,14 +64,14 @@ public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
 
         Context context = holder.itemView.getContext();
         int itemViewType = getItemViewType(position);
-        if (itemViewType == SCHOOL_LIST_TYPE){
-            ((SchoolListViewHolder)holder).schoolName.setText(mSchoolList.get(position).getSchool_name());
-            ((SchoolListViewHolder)holder).schoolAddress.setText(mSchoolList.get(position).getPrimary_address_line_1());
-            ((SchoolListViewHolder)holder).schoolCity.setText(mSchoolList.get(position).getCity());
-            ((SchoolListViewHolder)holder).schoolState.setText(mSchoolList.get(position).getState_code());
-            ((SchoolListViewHolder)holder).schoolZip.setText(mSchoolList.get(position).getZip());
-            ((SchoolListViewHolder)holder).schoolPhone.setText(mSchoolList.get(position).getPhone_number());
-            ((SchoolListViewHolder)holder).schoolWebLink.setOnClickListener(new View.OnClickListener() {
+        if (itemViewType == SCHOOL_LIST_TYPE) {
+            ((SchoolListViewHolder) holder).schoolName.setText(mSchoolList.get(position).getSchool_name());
+            ((SchoolListViewHolder) holder).schoolAddress.setText(mSchoolList.get(position).getPrimary_address_line_1());
+            ((SchoolListViewHolder) holder).schoolCity.setText(mSchoolList.get(position).getCity());
+            ((SchoolListViewHolder) holder).schoolState.setText(mSchoolList.get(position).getState_code());
+            ((SchoolListViewHolder) holder).schoolZip.setText(mSchoolList.get(position).getZip());
+            ((SchoolListViewHolder) holder).schoolPhone.setText(mSchoolList.get(position).getPhone_number());
+            ((SchoolListViewHolder) holder).schoolWebLink.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //Add intent to open web page
@@ -85,15 +86,19 @@ public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public int getItemViewType(int position) {
-        if (mSchoolList.get(position).getSchool_name().equals("Loading...")){
+        if (mSchoolList.get(position).getSchool_name().equals("Loading...")) {
             return LOADING_TYPE;
-        }else {
+        } else if (position == mSchoolList.size() - 1
+                && position != 0
+                && !mSchoolList.get(position).getSchool_name().equals("EXHAUSTED..")) {
+            return LOADING_TYPE;
+        } else {
             return SCHOOL_LIST_TYPE;
         }
     }
 
-    public void displayLoading(){
-        if (!isLoading()){
+    public void displayLoading() {
+        if (!isLoading()) {
             SchoolList schoolList = new SchoolList();
             schoolList.setSchool_name("Loading...");
             List<SchoolList> loadingList = new ArrayList<>();
@@ -116,14 +121,23 @@ public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
 
     @Override
     public int getItemCount() {
-        if (mSchoolList != null){
+        if (mSchoolList != null) {
             return mSchoolList.size();
         }
         return 0;
     }
 
-    public void setSchoolList(List<SchoolList> schoolList){
+    public void setSchoolList(List<SchoolList> schoolList) {
         mSchoolList = schoolList;
         notifyDataSetChanged();
+    }
+
+    public SchoolList getSelectedSchool(int position){
+        if (mSchoolList != null){
+            if (mSchoolList.size() > 0){
+                return mSchoolList.get(position);
+            }
+        }
+        return null;
     }
 }

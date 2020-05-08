@@ -23,9 +23,15 @@ public class MainListViewModel extends ViewModel {
         return mSchoolRepository.getSchoolList();
     }
 
-    public void searchSchoolsApi(int pageNumber) {
+    public void searchSchoolsApi(int limit, int offset) {
         mIsPerformingQuery = true;
-        mSchoolRepository.searchSchoolsApi(pageNumber);
+        mSchoolRepository.searchSchoolsApi(limit, offset);
+    }
+
+    public void searchNextPage(){
+        if (!mIsPerformingQuery){
+            mSchoolRepository.searchNextPage();
+        }
     }
 
     public boolean onBackPressed(){

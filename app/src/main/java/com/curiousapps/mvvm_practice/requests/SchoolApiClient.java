@@ -20,7 +20,8 @@ import retrofit2.Response;
 import static com.curiousapps.mvvm_practice.util.Constants.APP_TOKEN;
 import static com.curiousapps.mvvm_practice.util.Constants.LIMIT;
 import static com.curiousapps.mvvm_practice.util.Constants.NETWORK_TIMEOUT;
-import static com.curiousapps.mvvm_practice.util.Constants.PER_PAGE;
+import static com.curiousapps.mvvm_practice.util.Constants.OFFSET;
+import static com.curiousapps.mvvm_practice.util.Constants.OFFSET2;
 
 public class SchoolApiClient {
 
@@ -64,11 +65,11 @@ public class SchoolApiClient {
 
     private class RetrieveSchoolListRunnable implements Runnable{
 
-        private int pageNumber;
+        private int offset;
         boolean cancelRequest;
 
-        public RetrieveSchoolListRunnable(int pageNumber) {
-            this.pageNumber = pageNumber;
+        public RetrieveSchoolListRunnable(int offset) {
+            this.offset = offset;
             cancelRequest = false;
         }
 
@@ -77,17 +78,18 @@ public class SchoolApiClient {
             try {
 
                 //TestClient.getInstance().checkSchoolListRetrofit();
-                Response<List<SchoolList>> response = getSchools(pageNumber).execute();
+                Response<List<SchoolList>> response = getSchools(offset).execute();
                 if (cancelRequest){
                     return;
                 }
                 if (response.code() == 200){
                     List<SchoolList> schoolLists = new ArrayList<>(response.body());
-                    if (pageNumber == 1){
+                    if (offset >= 1){
                         mSchoolList.postValue(schoolLists);
                     }else {
                         List<SchoolList> currentSchools = mSchoolList.getValue();
-                        currentSchools.add((SchoolList) schoolLists);
+                        //currentSchools.add((SchoolList) schoolLists);
+                        currentSchools.addAll(schoolLists);
                         mSchoolList.postValue(currentSchools);
                     }
                 }else {
@@ -102,11 +104,11 @@ public class SchoolApiClient {
 
         }
 
-        private Call<List<SchoolList>> getSchools(int pageNumber){
+        private Call<List<SchoolList>> getSchools(int offset){
             return ServiceGenerator.getSchoolApi().searchSchools(
               APP_TOKEN,
               LIMIT,
-              PER_PAGE
+              OFFSET
             );
         }
 
