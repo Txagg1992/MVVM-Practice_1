@@ -28,8 +28,10 @@ public class SchoolApiClient {
     private static final String TAG = "SchoolApiClient";
     private static SchoolApiClient instance;
     private MutableLiveData<List<SchoolList>> mSchoolList;
+    private MutableLiveData<List<SchoolList>> mSchool;
 
     private RetrieveSchoolListRunnable mRetrieveSchoolListRunnable;
+    private RetrieveSchoolRunnable mRetrieveSchoolRunnable;
 
 
     public static SchoolApiClient getInstance(){
@@ -41,10 +43,14 @@ public class SchoolApiClient {
 
     private SchoolApiClient(){
         mSchoolList = new MutableLiveData<>();
+        mSchool = new MutableLiveData<>();
     }
 
     public LiveData<List<SchoolList>> getSchoolList(){
         return mSchoolList;
+    }
+    public LiveData<List<SchoolList>> getSchool(){
+        return mSchool;
     }
 
     public void searchSchoolsApi(int pageNumber){
@@ -61,6 +67,21 @@ public class SchoolApiClient {
                handler.cancel(true);
             }
         }, NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
+    }
+
+    public void searchSingleSchoolApi(String dbn){
+        if (mRetrieveSchoolRunnable != null){
+            mRetrieveSchoolRunnable = null;
+        }
+        mRetrieveSchoolRunnable = new RetrieveSchoolRunnable(dbn);
+        final Future handler = AppExecutors.getInstance().networkIO().submit(mRetrieveSchoolRunnable);
+
+        AppExecutors.getInstance().networkIO().schedule(new Runnable() {
+            @Override
+            public void run() {
+             handler.cancel(true);
+            }
+        },NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
     private class RetrieveSchoolListRunnable implements Runnable{
@@ -83,6 +104,8 @@ public class SchoolApiClient {
                     return;
                 }
                 if (response.code() == 200){
+                    Log.d(TAG, "<<onResponse List>>: Code: " + response.code());
+
                     List<SchoolList> schoolLists = new ArrayList<>(response.body());
                     if (offset >= 1){
                         mSchoolList.postValue(schoolLists);
@@ -118,9 +141,66 @@ public class SchoolApiClient {
         }
     }
 
+    private class RetrieveSchoolRunnable implements Runnable{
+
+        private String dbn;
+        boolean cancelRequest;
+
+        public RetrieveSchoolRunnable(String dbn) {
+            this.dbn = dbn;
+            cancelRequest = false;
+        }
+
+        @Override
+        public void run() {
+            try {
+
+                //TestClient.getInstance().checkSchoolListRetrofit();
+                Response<List<SchoolList>> response = getSchool(dbn).execute();
+                if (cancelRequest){
+                    return;
+                }
+                if (response.code() == 200){
+                    Log.d(TAG, "onResponse: Server: " + response.toString());
+                    Log.d(TAG, "<<onResponse>>: Code: " + response.code());
+                    Log.d(TAG, "Response: " + response.body());
+                    List<SchoolList> schoolLists = new ArrayList<>(response.body());
+                    for (SchoolList schoolList : schoolLists) {
+                        Log.d(TAG, " School Dbn: " + schoolList.getDbn());
+                        Log.d(TAG, " School Name: " + schoolList.getSchool_name());
+                    }
+                    mSchool.postValue(schoolLists);
+                }else {
+                    String error = response.errorBody().string();
+                    Log.e(TAG, "runError: " + error);
+                    mSchool.postValue(null);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                mSchool.postValue(null);
+            }
+
+        }
+
+        private Call<List<SchoolList>> getSchool(String dbn){
+            return ServiceGenerator.getSchoolApi().searchOneSchool(
+              APP_TOKEN,
+              dbn
+            );
+        }
+
+        private void cancelRequest(){
+            Log.d(TAG, "CancelRequest: cancelling search request");
+            cancelRequest = true;
+        }
+    }
+
     public void cancelRequest(){
         if (mRetrieveSchoolListRunnable != null){
             mRetrieveSchoolListRunnable.cancelRequest();
+        }
+        if (mRetrieveSchoolRunnable != null){
+            mRetrieveSchoolRunnable.cancelRequest();
         }
     }
 //

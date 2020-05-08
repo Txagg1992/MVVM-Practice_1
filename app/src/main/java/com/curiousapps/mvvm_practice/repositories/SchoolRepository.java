@@ -33,6 +33,13 @@ public class SchoolRepository {
     public LiveData<List<SchoolList>> getSchoolList(){
         return mSchoolApiClient.getSchoolList();
     }
+    public LiveData<List<SchoolList>> getSchool(){
+        return mSchoolApiClient.getSchool();
+    }
+
+    public void searchSingleSchoolApi(String dbn){
+        mSchoolApiClient.searchSingleSchoolApi(dbn);
+    }
 
     public void searchSchoolsApi(int limit, int offset){
         if (offset == 0){
