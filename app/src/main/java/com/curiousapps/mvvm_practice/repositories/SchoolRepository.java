@@ -1,17 +1,15 @@
 package com.curiousapps.mvvm_practice.repositories;
 
-import android.accounts.NetworkErrorException;
-
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.curiousapps.mvvm_practice.models.SchoolList;
 import com.curiousapps.mvvm_practice.requests.SchoolApiClient;
+import com.curiousapps.mvvm_practice.util.Constants;
 
 import java.util.List;
-
-import static com.curiousapps.mvvm_practice.util.Constants.OFFSET;
-import static com.curiousapps.mvvm_practice.util.Constants.OFFSET2;
 
 public class SchoolRepository {
 
@@ -19,6 +17,8 @@ public class SchoolRepository {
     private SchoolApiClient mSchoolApiClient;
     private int mOffset;
     private int mLimit;
+    private MutableLiveData<Boolean> mIsQueryExhausted = new MutableLiveData<>();
+    private MediatorLiveData<List<SchoolList>> mSchoolList = new MediatorLiveData<>();
 
     public static SchoolRepository getInstance(){
         if (instance == null){
@@ -29,12 +29,46 @@ public class SchoolRepository {
 
     private SchoolRepository() {
         mSchoolApiClient = SchoolApiClient.getInstance();
+        initMediators();
     }
+    private void initMediators(){
+        LiveData<List<SchoolList>> schoolListApiSource = mSchoolApiClient.getSchoolList();
+        mSchoolList.addSource(schoolListApiSource, new Observer<List<SchoolList>>() {
+            @Override
+            public void onChanged(List<SchoolList> schoolLists) {
+                if (schoolLists != null){
+                    mSchoolList.setValue(schoolLists);
+                    doneQuery(schoolLists);
+                }else {
+                    //search database
+                    doneQuery(null);
+                }
+            }
+        });
+    }
+
+    private void doneQuery(List<SchoolList> list){
+        if (list != null){
+            if (list.size() % 10 != 0){
+                mIsQueryExhausted.setValue(true);
+            }
+        }else {
+            mIsQueryExhausted.setValue(true);
+        }
+    }
+
+    public LiveData<Boolean> isQueryExhausted(){
+        return mIsQueryExhausted;
+    }
+
     public LiveData<List<SchoolList>> getSchoolList(){
-        return mSchoolApiClient.getSchoolList();
+        return mSchoolList;
     }
     public LiveData<List<SchoolList>> getSchool(){
         return mSchoolApiClient.getSchool();
+    }
+    public LiveData<Boolean> isSchoolRequestTimedOut() {
+        return mSchoolApiClient.isSchoolRequestTimedOut();
     }
 
     public void searchSingleSchoolApi(String dbn){
@@ -47,6 +81,7 @@ public class SchoolRepository {
         }
         mLimit = limit;
         mOffset = offset;
+        mIsQueryExhausted.setValue(false);
         mSchoolApiClient.searchSchoolsApi(offset);
     }
 

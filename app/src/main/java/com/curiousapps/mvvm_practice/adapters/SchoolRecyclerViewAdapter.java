@@ -15,6 +15,7 @@ import com.curiousapps.mvvm_practice.models.SchoolList;
 import com.curiousapps.mvvm_practice.util.Constants;
 
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -23,6 +24,7 @@ public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
 
     private static final int SCHOOL_LIST_TYPE = 1;
     private static final int LOADING_TYPE = 2;
+    private static final int EXHAUSTED_TYPE = 3;
 
     private List<SchoolList> mSchoolList;
     private OnSchoolListListener mOnSchoolListListener;
@@ -51,6 +53,11 @@ public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
                         .inflate(R.layout.layout_loading_dots, parent, false);
                 return new LoadingViewHolder(view);
             }
+            case EXHAUSTED_TYPE: {
+                view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.layout_search_exhausted, parent, false);
+                return new SearchExhaustedViewHolder(view);
+            }
             default: {
                 view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.school_list_item, parent, false);
@@ -71,6 +78,7 @@ public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
             ((SchoolListViewHolder) holder).schoolState.setText(mSchoolList.get(position).getState_code());
             ((SchoolListViewHolder) holder).schoolZip.setText(mSchoolList.get(position).getZip());
             ((SchoolListViewHolder) holder).schoolPhone.setText(mSchoolList.get(position).getPhone_number());
+
             ((SchoolListViewHolder) holder).schoolWebLink.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -88,12 +96,33 @@ public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
     public int getItemViewType(int position) {
         if (mSchoolList.get(position).getSchool_name().equals("Loading...")) {
             return LOADING_TYPE;
-        } else if (position == mSchoolList.size() - 1
+        } else if (mSchoolList.get(position).getSchool_name().equals("EXHAUSTED..")) {
+            return EXHAUSTED_TYPE;
+        }else if (position == mSchoolList.size() - 1
                 && position != 0
                 && !mSchoolList.get(position).getSchool_name().equals("EXHAUSTED..")) {
             return LOADING_TYPE;
-        } else {
+        }else {
             return SCHOOL_LIST_TYPE;
+        }
+    }
+
+    public void setQueryExhausted(){
+        hideLoading();
+        SchoolList exhaustedSchoolList = new SchoolList();
+        exhaustedSchoolList.setSchool_name("EXHAUSTED...");
+        mSchoolList.add(exhaustedSchoolList);
+        notifyDataSetChanged();
+    }
+
+    public void hideLoading(){
+        if (isLoading()){
+            for (SchoolList schoolList: mSchoolList){
+                if (schoolList.getSchool_name().equals("Loading...")){
+                    mSchoolList.remove(schoolList);
+                }
+            }
+            notifyDataSetChanged();
         }
     }
 

@@ -13,9 +13,9 @@ public class Constants {
     public static final String  APP_TOKEN = "0vHmFeII4b25Rl1xf1cjg1Eul";
 
     public static final String APP_TOKEN_PREFIX = "$$app_token";
-    public static final String LIMIT = "150";
+    public static final String LIMIT = "151";
     public static final String PER_PAGE = "20";
-    public static int OFFSET = 0;
+    public static int OFFSET = 20;
     public static int OFFSET2 = 20;
 
     public static final int NETWORK_TIMEOUT = 3000;

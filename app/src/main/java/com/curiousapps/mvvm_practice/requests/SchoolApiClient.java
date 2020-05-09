@@ -29,32 +29,37 @@ public class SchoolApiClient {
     private static SchoolApiClient instance;
     private MutableLiveData<List<SchoolList>> mSchoolList;
     private MutableLiveData<List<SchoolList>> mSchool;
+    private MutableLiveData<Boolean> mSchoolRequestTimeout = new MutableLiveData<>();
 
     private RetrieveSchoolListRunnable mRetrieveSchoolListRunnable;
     private RetrieveSchoolRunnable mRetrieveSchoolRunnable;
 
 
-    public static SchoolApiClient getInstance(){
-        if (instance == null){
+    public static SchoolApiClient getInstance() {
+        if (instance == null) {
             instance = new SchoolApiClient();
         }
         return instance;
     }
 
-    private SchoolApiClient(){
+    private SchoolApiClient() {
         mSchoolList = new MutableLiveData<>();
         mSchool = new MutableLiveData<>();
     }
 
-    public LiveData<List<SchoolList>> getSchoolList(){
+    public LiveData<List<SchoolList>> getSchoolList() {
         return mSchoolList;
     }
-    public LiveData<List<SchoolList>> getSchool(){
+
+    public LiveData<List<SchoolList>> getSchool() {
         return mSchool;
     }
+    public LiveData<Boolean> isSchoolRequestTimedOut() {
+        return mSchoolRequestTimeout;
+    }
 
-    public void searchSchoolsApi(int pageNumber){
-        if (mRetrieveSchoolListRunnable != null){
+    public void searchSchoolsApi(int pageNumber) {
+        if (mRetrieveSchoolListRunnable != null) {
             mRetrieveSchoolListRunnable = null;
         }
         mRetrieveSchoolListRunnable = new RetrieveSchoolListRunnable(pageNumber);
@@ -64,27 +69,29 @@ public class SchoolApiClient {
             @Override
             public void run() {
                 // Let user know The network timed out
-               handler.cancel(true);
+                handler.cancel(true);
             }
         }, NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
-    public void searchSingleSchoolApi(String dbn){
-        if (mRetrieveSchoolRunnable != null){
+    public void searchSingleSchoolApi(String dbn) {
+        if (mRetrieveSchoolRunnable != null) {
             mRetrieveSchoolRunnable = null;
         }
         mRetrieveSchoolRunnable = new RetrieveSchoolRunnable(dbn);
         final Future handler = AppExecutors.getInstance().networkIO().submit(mRetrieveSchoolRunnable);
 
+        mSchoolRequestTimeout.setValue(false);
         AppExecutors.getInstance().networkIO().schedule(new Runnable() {
             @Override
             public void run() {
-             handler.cancel(true);
+                mSchoolRequestTimeout.postValue(true);
+                handler.cancel(true);
             }
-        },NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
+        }, NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
-    private class RetrieveSchoolListRunnable implements Runnable{
+    private class RetrieveSchoolListRunnable implements Runnable {
 
         private int offset;
         boolean cancelRequest;
@@ -100,22 +107,22 @@ public class SchoolApiClient {
 
                 //TestClient.getInstance().checkSchoolListRetrofit();
                 Response<List<SchoolList>> response = getSchools(offset).execute();
-                if (cancelRequest){
+                if (cancelRequest) {
                     return;
                 }
-                if (response.code() == 200){
+                if (response.code() == 200) {
                     Log.d(TAG, "<<onResponse List>>: Code: " + response.code());
 
                     List<SchoolList> schoolLists = new ArrayList<>(response.body());
-                    if (offset >= 1){
+                    if (offset >= 1) {
                         mSchoolList.postValue(schoolLists);
-                    }else {
+                    } else {
                         List<SchoolList> currentSchools = mSchoolList.getValue();
                         //currentSchools.add((SchoolList) schoolLists);
                         currentSchools.addAll(schoolLists);
                         mSchoolList.postValue(currentSchools);
                     }
-                }else {
+                } else {
                     String error = response.errorBody().string();
                     Log.e(TAG, "runError: " + error);
                     mSchoolList.postValue(null);
@@ -127,21 +134,21 @@ public class SchoolApiClient {
 
         }
 
-        private Call<List<SchoolList>> getSchools(int offset){
+        private Call<List<SchoolList>> getSchools(int offset) {
             return ServiceGenerator.getSchoolApi().searchSchools(
-              APP_TOKEN,
-              LIMIT,
-              OFFSET
+                    APP_TOKEN,
+                    LIMIT,
+                    OFFSET
             );
         }
 
-        private void cancelRequest(){
+        private void cancelRequest() {
             Log.d(TAG, "CancelRequest: cancelling search request");
             cancelRequest = true;
         }
     }
 
-    private class RetrieveSchoolRunnable implements Runnable{
+    private class RetrieveSchoolRunnable implements Runnable {
 
         private String dbn;
         boolean cancelRequest;
@@ -157,10 +164,10 @@ public class SchoolApiClient {
 
                 //TestClient.getInstance().checkSchoolListRetrofit();
                 Response<List<SchoolList>> response = getSchool(dbn).execute();
-                if (cancelRequest){
+                if (cancelRequest) {
                     return;
                 }
-                if (response.code() == 200){
+                if (response.code() == 200) {
                     Log.d(TAG, "onResponse: Server: " + response.toString());
                     Log.d(TAG, "<<onResponse>>: Code: " + response.code());
                     Log.d(TAG, "Response: " + response.body());
@@ -170,7 +177,7 @@ public class SchoolApiClient {
                         Log.d(TAG, " School Name: " + schoolList.getSchool_name());
                     }
                     mSchool.postValue(schoolLists);
-                }else {
+                } else {
                     String error = response.errorBody().string();
                     Log.e(TAG, "runError: " + error);
                     mSchool.postValue(null);
@@ -182,24 +189,24 @@ public class SchoolApiClient {
 
         }
 
-        private Call<List<SchoolList>> getSchool(String dbn){
+        private Call<List<SchoolList>> getSchool(String dbn) {
             return ServiceGenerator.getSchoolApi().searchOneSchool(
-              APP_TOKEN,
-              dbn
+                    APP_TOKEN,
+                    dbn
             );
         }
 
-        private void cancelRequest(){
+        private void cancelRequest() {
             Log.d(TAG, "CancelRequest: cancelling search request");
             cancelRequest = true;
         }
     }
 
-    public void cancelRequest(){
-        if (mRetrieveSchoolListRunnable != null){
+    public void cancelRequest() {
+        if (mRetrieveSchoolListRunnable != null) {
             mRetrieveSchoolListRunnable.cancelRequest();
         }
-        if (mRetrieveSchoolRunnable != null){
+        if (mRetrieveSchoolRunnable != null) {
             mRetrieveSchoolRunnable.cancelRequest();
         }
     }

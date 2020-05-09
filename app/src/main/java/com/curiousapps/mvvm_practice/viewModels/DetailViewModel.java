@@ -12,13 +12,18 @@ public class DetailViewModel extends ViewModel {
 
     private SchoolRepository mSchoolRepository;
     private String mDbn;
+    private boolean mDidRetrieveSchool;
 
     public DetailViewModel(){
         mSchoolRepository = SchoolRepository.getInstance();
+        mDidRetrieveSchool = false;
     }
 
     public LiveData<List<SchoolList>> getSchool(){
         return mSchoolRepository.getSchool();
+    }
+    public LiveData<Boolean> isSchoolRequestTimedOut() {
+        return mSchoolRepository.isSchoolRequestTimedOut();
     }
 
     public void searchSingleSchoolApi(String dbn){
@@ -28,5 +33,12 @@ public class DetailViewModel extends ViewModel {
 
     public String getDbn(){
         return mDbn;
+    }
+
+    public void setDidRetrieveSchool(boolean retrieveSchool){
+        mDidRetrieveSchool = retrieveSchool;
+    }
+    public boolean didRetrieveSchool(){
+        return mDidRetrieveSchool;
     }
 }

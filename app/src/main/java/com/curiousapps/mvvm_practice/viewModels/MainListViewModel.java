@@ -23,30 +23,35 @@ public class MainListViewModel extends ViewModel {
         return mSchoolRepository.getSchoolList();
     }
 
+    public LiveData<Boolean> isQueryExhausted() {
+        return mSchoolRepository.isQueryExhausted();
+    }
+
     public void searchSchoolsApi(int limit, int offset) {
         mIsPerformingQuery = true;
         mSchoolRepository.searchSchoolsApi(limit, offset);
     }
 
-    public void searchNextPage(){
-        if (!mIsPerformingQuery){
+    public void searchNextPage() {
+        if (!mIsPerformingQuery
+                && !isQueryExhausted().getValue()) {
             mSchoolRepository.searchNextPage();
         }
     }
 
-    public boolean onBackPressed(){
-        if (mIsPerformingQuery){
+    public boolean onBackPressed() {
+        if (mIsPerformingQuery) {
             mSchoolRepository.cancelRequest();
             mIsPerformingQuery = false;
         }
         return true;
     }
 
-    public void setIsPerformingQuery(Boolean isPerformingQuery){
+    public void setIsPerformingQuery(Boolean isPerformingQuery) {
         mIsPerformingQuery = isPerformingQuery;
     }
 
-    public boolean isPerformingQuery(){
+    public boolean isPerformingQuery() {
         return mIsPerformingQuery;
     }
 }

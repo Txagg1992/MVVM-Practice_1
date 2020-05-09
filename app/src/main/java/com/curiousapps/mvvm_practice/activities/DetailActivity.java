@@ -1,6 +1,5 @@
 package com.curiousapps.mvvm_practice.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -14,7 +13,6 @@ import android.widget.TextView;
 
 import com.curiousapps.mvvm_practice.R;
 import com.curiousapps.mvvm_practice.models.SchoolList;
-import com.curiousapps.mvvm_practice.repositories.SchoolRepository;
 import com.curiousapps.mvvm_practice.requests.TestClient;
 import com.curiousapps.mvvm_practice.viewModels.DetailViewModel;
 
@@ -49,8 +47,8 @@ public class DetailActivity extends BaseActivity {
         subscribeObserver();
     }
 
-    private void getIncomingIntent(){
-        if (getIntent().hasExtra("schoolList")){
+    private void getIncomingIntent() {
+        if (getIntent().hasExtra("schoolList")) {
             SchoolList schoolList = getIntent().getParcelableExtra("schoolList");
             Log.d(TAG, "getIncomingIntent: " + schoolList.getDbn());
             Log.d(TAG, "getIncomingIntent: " + schoolList.getOverview_paragraph());
@@ -58,25 +56,35 @@ public class DetailActivity extends BaseActivity {
         }
     }
 
-    private void subscribeObserver(){
+    private void subscribeObserver() {
         mDetailViewModel.getSchool().observe(this, new Observer<List<SchoolList>>() {
             @Override
             public void onChanged(List<SchoolList> schoolLists) {
-                if (schoolLists != null){
-                    for (SchoolList schoolList: schoolLists){
-                        if (schoolList.getDbn().equals(mDetailViewModel.getDbn())){
+                if (schoolLists != null) {
+                    for (SchoolList schoolList : schoolLists) {
+                        if (schoolList.getDbn().equals(mDetailViewModel.getDbn())) {
                             Log.d(TAG, "Detail onChanged: ---><----------------------><---");
                             Log.d(TAG, "onChanged: " + schoolList.getSchool_name());
                             Log.d(TAG, "onChanged: " + schoolList.getOverview_paragraph());
                             setSchoolProperties(schoolLists);
+                            mDetailViewModel.setDidRetrieveSchool(true);
                         }
                     }
                 }
             }
         });
+        mDetailViewModel.isSchoolRequestTimedOut().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean && !mDetailViewModel.didRetrieveSchool()) {
+                    Log.d(TAG, "<<onChanged>>: timed out");
+                    displayErrorMessage("Error retrieving data." + "\nCheck Network Connection.");
+                }
+            }
+        });
     }
 
-    private void initViews(){
+    private void initViews() {
         detailSchoolName = findViewById(R.id.detail_school_name);
         detailSchoolAddress = findViewById(R.id.detail_school_address);
         detailSchoolCity = findViewById(R.id.detail_school_city);
@@ -89,9 +97,9 @@ public class DetailActivity extends BaseActivity {
 
     }
 
-    private void setSchoolProperties(List<SchoolList> schoolLists){
-        if (schoolLists !=null){
-            for (SchoolList schoolList: schoolLists){
+    private void setSchoolProperties(List<SchoolList> schoolLists) {
+        if (schoolLists != null) {
+            for (SchoolList schoolList : schoolLists) {
                 detailSchoolName.setText(schoolList.getSchool_name());
                 detailSchoolAddress.setText(schoolList.getPrimary_address_line_1());
                 detailSchoolCity.setText(schoolList.getCity());
@@ -103,11 +111,22 @@ public class DetailActivity extends BaseActivity {
         showProgressBar(false);
     }
 
-    private void showParent(){
+    private void showParent() {
         mScrollView.setVisibility(View.VISIBLE);
     }
 
-    private void nothing(){
+    private void displayErrorMessage(String errorMessage){
+        detailSchoolName.setText("ERROR!");
+        detailSchoolAddress.setText("");
+        detailSchoolCity.setText("Could not retrieve selected school...");
+        detailSchoolPhone.setText("");
+        satButton.setText("");
+        detailSchoolOverView.setText(errorMessage);
+        showParent();
+        showProgressBar(false);
+    }
+
+    private void nothing() {
         TestClient.getInstance().checkSingleItemFromListRetrofit();
     }
 }

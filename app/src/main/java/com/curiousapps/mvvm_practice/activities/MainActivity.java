@@ -2,6 +2,7 @@ package com.curiousapps.mvvm_practice.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -60,6 +61,16 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
                 if (schoolLists != null){
                     Testing.printSchools(TAG, schoolLists);
                     mSchoolRecyclerViewAdapter.setSchoolList(schoolLists);
+                }
+            }
+        });
+        mMainListViewModel.isQueryExhausted().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                Log.d(TAG, "onChanged: Query Exhausted");
+
+                if (aBoolean){
+                    mSchoolRecyclerViewAdapter.setQueryExhausted();
                 }
             }
         });
