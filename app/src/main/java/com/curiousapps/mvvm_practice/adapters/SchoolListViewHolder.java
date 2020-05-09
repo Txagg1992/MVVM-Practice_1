@@ -1,7 +1,6 @@
 package com.curiousapps.mvvm_practice.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -10,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.curiousapps.mvvm_practice.R;
-import com.curiousapps.mvvm_practice.activities.WebViewActivity;
 import com.curiousapps.mvvm_practice.models.SchoolList;
 
 public class SchoolListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

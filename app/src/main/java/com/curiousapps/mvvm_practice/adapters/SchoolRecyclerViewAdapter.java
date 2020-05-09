@@ -1,12 +1,18 @@
 package com.curiousapps.mvvm_practice.adapters;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuView;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.curiousapps.mvvm_practice.R;
@@ -82,9 +88,23 @@ public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
             ((SchoolListViewHolder) holder).schoolWebLink.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Log.d("Link Button", "Clicked: " + mSchoolList.get(position).getWebsite().toString());
+
                     //Add intent to open web page
                     Intent intent = new Intent(context, WebViewActivity.class);
                     intent.putExtra("link", mSchoolList.get(position).getWebsite());
+                    context.startActivity(intent);
+                }
+            });
+
+            ((SchoolListViewHolder) holder).schoolPhone.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("Phone Button", "Clicked: " + mSchoolList.get(position).getPhone_number().toString());
+
+                    String uri = "tel:" + mSchoolList.get(position).getPhone_number();
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse(uri));
                     context.startActivity(intent);
                 }
             });
