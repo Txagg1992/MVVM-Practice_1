@@ -102,7 +102,7 @@ public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView
                 public void onClick(View v) {
                     Log.d("Phone Button", "Clicked: " + mSchoolList.get(position).getPhone_number().toString());
 
-                    String uri = "tel:" + mSchoolList.get(position).getPhone_number();
+                        String uri = "tel:" + mSchoolList.get(position).getPhone_number();
                     Intent intent = new Intent(Intent.ACTION_DIAL);
                     intent.setData(Uri.parse(uri));
                     context.startActivity(intent);

@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData;
 
 import com.curiousapps.mvvm_practice.models.SchoolList;
 import com.curiousapps.mvvm_practice.models.SchoolSAT;
-import com.curiousapps.mvvm_practice.requests.responses.SchoolListResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -3,6 +3,9 @@ package com.curiousapps.mvvm_practice.activities;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.curiousapps.mvvm_practice.R;
 import com.curiousapps.mvvm_practice.models.SchoolList;
@@ -34,6 +38,7 @@ public class DetailActivity extends BaseActivity {
     private ScrollView mScrollView;
 
     private DetailViewModel mDetailViewModel;
+    private SchoolList mSchoolList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +54,10 @@ public class DetailActivity extends BaseActivity {
 
     private void getIncomingIntent() {
         if (getIntent().hasExtra("schoolList")) {
-            SchoolList schoolList = getIntent().getParcelableExtra("schoolList");
-            Log.d(TAG, "getIncomingIntent: " + schoolList.getDbn());
-            Log.d(TAG, "getIncomingIntent: " + schoolList.getOverview_paragraph());
-            mDetailViewModel.searchSingleSchoolApi(schoolList.getDbn());
+            mSchoolList = getIntent().getParcelableExtra("schoolList");
+            Log.d(TAG, "getIncomingIntent: " + mSchoolList.getDbn());
+            Log.d(TAG, "getIncomingIntent: " + mSchoolList.getOverview_paragraph());
+            mDetailViewModel.searchSingleSchoolApi(mSchoolList.getDbn());
         }
     }
 
@@ -107,6 +112,11 @@ public class DetailActivity extends BaseActivity {
                 detailSchoolOverView.setText(schoolList.getOverview_paragraph());
             }
         }
+        clickForSchoolPhone();
+        clickForSchoolMail();
+        clickForWebView();
+        clickForSatActivity();
+
         showParent();
         showProgressBar(false);
     }
@@ -124,6 +134,68 @@ public class DetailActivity extends BaseActivity {
         detailSchoolOverView.setText(errorMessage);
         showParent();
         showProgressBar(false);
+    }
+
+    private void clickForSchoolPhone(){
+        detailSchoolPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Phone Button", "Clicked: " + mSchoolList.getPhone_number().toString());
+
+                String uri = "tel:" + mSchoolList.getPhone_number();
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse(uri));
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void clickForSchoolMail(){
+
+        detailSchoolMail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Mail Button", "Clicked: " + mSchoolList.getSchool_email().toString());
+                Intent mailIntent = new Intent(Intent.ACTION_SEND);
+                mailIntent.setType("message/rfc822");
+                mailIntent.putExtra(Intent.EXTRA_EMAIL,
+                        new String[]{mSchoolList.getSchool_email()});
+                mailIntent.putExtra(Intent.EXTRA_SUBJECT, "School Information");
+                mailIntent.putExtra(Intent.EXTRA_TEXT, "");
+                try {
+                 startActivity(Intent.createChooser(mailIntent, "Send mail..."));
+                }catch (ActivityNotFoundException ex){
+                    Toast.makeText(DetailActivity.this,
+                            "There are no email installed clients on this phone.",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+    }
+
+    private void clickForWebView(){
+        detailSchoolWeb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Link Button", "Clicked: " + mSchoolList.getWebsite().toString());
+
+                //Add intent to open web page
+                Intent intent = new Intent(DetailActivity.this, WebViewActivity.class);
+                intent.putExtra("link", mSchoolList.getWebsite());
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void clickForSatActivity(){
+        satButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent satIntent = new Intent(DetailActivity.this, SatActivity.class);
+                startActivity(satIntent);
+            }
+        });
     }
 
     private void nothing() {
