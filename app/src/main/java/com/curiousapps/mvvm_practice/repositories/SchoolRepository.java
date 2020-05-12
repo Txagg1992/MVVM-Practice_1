@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.curiousapps.mvvm_practice.models.SchoolList;
+import com.curiousapps.mvvm_practice.models.SchoolSAT;
 import com.curiousapps.mvvm_practice.requests.SchoolApiClient;
 import com.curiousapps.mvvm_practice.util.Constants;
 
@@ -67,12 +68,18 @@ public class SchoolRepository {
     public LiveData<List<SchoolList>> getSchool(){
         return mSchoolApiClient.getSchool();
     }
+    public LiveData<List<SchoolSAT>> getSchoolSat(){
+        return mSchoolApiClient.getSchoolSat();
+    }
     public LiveData<Boolean> isSchoolRequestTimedOut() {
         return mSchoolApiClient.isSchoolRequestTimedOut();
     }
 
     public void searchSingleSchoolApi(String dbn){
         mSchoolApiClient.searchSingleSchoolApi(dbn);
+    }
+    public void searchSchoolSATApi(String dbn){
+        mSchoolApiClient.searchSchoolSatApi(dbn);
     }
 
     public void searchSchoolsApi(int limit, int offset){

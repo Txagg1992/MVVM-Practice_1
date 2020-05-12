@@ -34,14 +34,14 @@ public interface SchoolApi {
             @Query("$$app_token") String app_token,
             @Query("dbn") String dbn
             );
-
+//
 //    @GET("users")
 //    Call<List<PicObject>> getUserName();
-//
-//    @GET("resource/s3k6-pzi2.json")
-//    Call<List<SchoolList>> searchOneSchool(
-//            @Query("$$app_token") String app_token,
-//            @Query("dbn") String dbn
-//    );
+
+    @GET("resource/s3k6-pzi2.json")
+    Call<List<SchoolList>> searchOneSchool(
+            @Query("$$app_token") String app_token,
+            @Query("dbn") String dbn
+    );
 
 }

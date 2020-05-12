@@ -10,7 +10,6 @@ import java.util.List;
 
 public class SchoolSAT implements Parcelable {
 
-    private List<SchoolSAT> schoolSATS;
 
     @SerializedName("dbn")
     @Expose
@@ -31,29 +30,31 @@ public class SchoolSAT implements Parcelable {
     @Expose
     private String satWritingAvgScore;
 
-    public SchoolSAT(List<SchoolSAT> schoolSATS, String dbn, String school_Name,
-                     String numOfSatTestTakers, String satCriticalReadingAvgScore,
-                     String satMathAvgScore, String satWritingAvgScore) {
-        this.schoolSATS = schoolSATS;
+    private List<SchoolSAT> schoolSAT;
+
+    public SchoolSAT(String dbn, String school_Name, String numOfSatTestTakers,
+                     String satCriticalReadingAvgScore, String satMathAvgScore,
+                     String satWritingAvgScore, List<SchoolSAT> schoolSAT) {
         this.dbn = dbn;
         this.school_Name = school_Name;
         this.numOfSatTestTakers = numOfSatTestTakers;
         this.satCriticalReadingAvgScore = satCriticalReadingAvgScore;
         this.satMathAvgScore = satMathAvgScore;
         this.satWritingAvgScore = satWritingAvgScore;
+        this.schoolSAT = schoolSAT;
     }
 
     public SchoolSAT() {
     }
 
     protected SchoolSAT(Parcel in) {
-        schoolSATS = in.createTypedArrayList(SchoolSAT.CREATOR);
         dbn = in.readString();
         school_Name = in.readString();
         numOfSatTestTakers = in.readString();
         satCriticalReadingAvgScore = in.readString();
         satMathAvgScore = in.readString();
         satWritingAvgScore = in.readString();
+        schoolSAT = in.createTypedArrayList(SchoolSAT.CREATOR);
     }
 
     public static final Creator<SchoolSAT> CREATOR = new Creator<SchoolSAT>() {
@@ -67,14 +68,6 @@ public class SchoolSAT implements Parcelable {
             return new SchoolSAT[size];
         }
     };
-
-    public List<SchoolSAT> getSchoolSATS() {
-        return schoolSATS;
-    }
-
-    public void setSchoolSATS(List<SchoolSAT> schoolSATS) {
-        this.schoolSATS = schoolSATS;
-    }
 
     public String getDbn() {
         return dbn;
@@ -124,18 +117,27 @@ public class SchoolSAT implements Parcelable {
         this.satWritingAvgScore = satWritingAvgScore;
     }
 
+    public List<SchoolSAT> getSchoolSAT() {
+        return schoolSAT;
+    }
+
+    public void setSchoolSAT(List<SchoolSAT> schoolSAT) {
+        this.schoolSAT = schoolSAT;
+    }
+
     @Override
     public String toString() {
         return "SchoolSAT{" +
-                "schoolSATS=" + schoolSATS +
-                ", dbn='" + dbn + '\'' +
+                "dbn='" + dbn + '\'' +
                 ", school_Name='" + school_Name + '\'' +
                 ", numOfSatTestTakers='" + numOfSatTestTakers + '\'' +
                 ", satCriticalReadingAvgScore='" + satCriticalReadingAvgScore + '\'' +
                 ", satMathAvgScore='" + satMathAvgScore + '\'' +
                 ", satWritingAvgScore='" + satWritingAvgScore + '\'' +
+                ", schoolSAT=" + schoolSAT +
                 '}';
     }
+
 
     @Override
     public int describeContents() {
@@ -144,12 +146,12 @@ public class SchoolSAT implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(schoolSATS);
         dest.writeString(dbn);
         dest.writeString(school_Name);
         dest.writeString(numOfSatTestTakers);
         dest.writeString(satCriticalReadingAvgScore);
         dest.writeString(satMathAvgScore);
         dest.writeString(satWritingAvgScore);
+        dest.writeTypedList(schoolSAT);
     }
 }

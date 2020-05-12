@@ -154,8 +154,8 @@ public class TestClient {
                     Log.d(TAG, "Response: " + response.body());
                     List<SchoolSAT> schoolSATS = new ArrayList<>(response.body());
                     for (SchoolSAT schoolSAT : schoolSATS) {
-                        Log.d(TAG, " School Dbn: " + schoolSAT.getDbn());
-                        Log.d(TAG, " School Name: " + schoolSAT.getSchool_Name());
+                        //Log.d(TAG, " School Dbn: " + schoolSAT.getDbn());
+//                        Log.d(TAG, " School Name: " + schoolSAT.getSchool_Name());
                     }
                 } else {
                     try {

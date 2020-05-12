@@ -30,6 +30,7 @@ public class DetailActivity extends BaseActivity {
     private TextView detailSchoolCity;
     private TextView detailSchoolPhone;
     private TextView detailSchoolOverView;
+    private String schoolDbn;
 
     private ImageView detailSchoolWeb;
     private ImageView detailSchoolMail;
@@ -193,7 +194,12 @@ public class DetailActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Intent satIntent = new Intent(DetailActivity.this, SatActivity.class);
-                startActivity(satIntent);
+                Log.d(TAG, "SchoolExtraSend dbn: " + mSchoolList.getDbn());
+                satIntent.putExtra("schoolDbn", mSchoolList);
+
+                //mSchoolRecyclerViewAdapter.getSelectedSchool(position)
+
+                DetailActivity.this.startActivity(satIntent);
             }
         });
     }

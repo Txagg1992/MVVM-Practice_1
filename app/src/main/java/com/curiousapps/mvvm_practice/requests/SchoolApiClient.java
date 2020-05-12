@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.curiousapps.mvvm_practice.AppExecutors;
 import com.curiousapps.mvvm_practice.models.SchoolList;
+import com.curiousapps.mvvm_practice.models.SchoolSAT;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,10 +30,12 @@ public class SchoolApiClient {
     private static SchoolApiClient instance;
     private MutableLiveData<List<SchoolList>> mSchoolList;
     private MutableLiveData<List<SchoolList>> mSchool;
+    private MutableLiveData<List<SchoolSAT>> mSchoolSAT;
     private MutableLiveData<Boolean> mSchoolRequestTimeout = new MutableLiveData<>();
 
     private RetrieveSchoolListRunnable mRetrieveSchoolListRunnable;
     private RetrieveSchoolRunnable mRetrieveSchoolRunnable;
+    private RetrieveSchoolSatRunnable mRetrieveSchoolSatRunnable;
 
 
     public static SchoolApiClient getInstance() {
@@ -45,6 +48,7 @@ public class SchoolApiClient {
     private SchoolApiClient() {
         mSchoolList = new MutableLiveData<>();
         mSchool = new MutableLiveData<>();
+        mSchoolSAT = new MutableLiveData<>();
     }
 
     public LiveData<List<SchoolList>> getSchoolList() {
@@ -53,6 +57,9 @@ public class SchoolApiClient {
 
     public LiveData<List<SchoolList>> getSchool() {
         return mSchool;
+    }
+    public LiveData<List<SchoolSAT>> getSchoolSat() {
+        return mSchoolSAT;
     }
     public LiveData<Boolean> isSchoolRequestTimedOut() {
         return mSchoolRequestTimeout;
@@ -86,6 +93,22 @@ public class SchoolApiClient {
             @Override
             public void run() {
                 mSchoolRequestTimeout.postValue(true);
+                handler.cancel(true);
+            }
+        }, NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
+    }
+
+    public void searchSchoolSatApi(String dbn){
+        if (mRetrieveSchoolSatRunnable != null){
+            mRetrieveSchoolSatRunnable = null;
+        }
+        mRetrieveSchoolSatRunnable = new RetrieveSchoolSatRunnable(dbn);
+        final Future handler = AppExecutors.getInstance().networkIO().submit(mRetrieveSchoolSatRunnable);
+
+        AppExecutors.getInstance().networkIO().schedule(new Runnable() {
+            @Override
+            public void run() {
+
                 handler.cancel(true);
             }
         }, NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -202,12 +225,62 @@ public class SchoolApiClient {
         }
     }
 
+    private class RetrieveSchoolSatRunnable implements Runnable{
+        private String dbn;
+        boolean cancelRequest;
+
+        public RetrieveSchoolSatRunnable(String dbn) {
+            this.dbn = dbn;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Response<List<SchoolSAT>> response = getSchoolSat(dbn).execute();
+                if (cancelRequest){
+                    return;
+                }
+                if (response.code() == 200){
+                    Log.d(TAG, "<<onResponse>>: SATCode: " + response.code());
+                    Log.d(TAG, "ResponseSAT: " + response.body());
+                    List<SchoolSAT> schoolSATS = new ArrayList<>(response.body());
+                    for (SchoolSAT schoolSAT: schoolSATS){
+                        Log.d(TAG, " SchoolSat Dbn: " + schoolSAT.getDbn());
+                        Log.d(TAG, "SchoolSAT Name: " + schoolSAT.getSchool_Name());
+                    }
+                    mSchoolSAT.postValue(schoolSATS);
+                }else {
+                    String error = response.errorBody().string();
+                    Log.d(TAG, "satError: " + error);
+                    mSchoolSAT.postValue(null);
+                }
+            }catch (IOException eSat){
+                eSat.printStackTrace();
+                mSchoolSAT.postValue(null);
+            }
+        }
+
+        private Call<List<SchoolSAT>> getSchoolSat(String dbn){
+            return ServiceGenerator.getSchoolApi().getSchoolSat(
+                    APP_TOKEN,
+                    dbn
+            );
+        }
+        private void cancelRequest(){
+            Log.d(TAG, "CancelRequest: cancelling SAT request");
+            cancelRequest = true;
+        }
+    }
+
     public void cancelRequest() {
         if (mRetrieveSchoolListRunnable != null) {
             mRetrieveSchoolListRunnable.cancelRequest();
         }
         if (mRetrieveSchoolRunnable != null) {
             mRetrieveSchoolRunnable.cancelRequest();
+        }
+        if (mRetrieveSchoolSatRunnable != null) {
+            mRetrieveSchoolSatRunnable.cancelRequest();
         }
     }
 //
