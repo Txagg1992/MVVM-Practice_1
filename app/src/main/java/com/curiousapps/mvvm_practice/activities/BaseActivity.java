@@ -24,10 +24,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.setContentView(constraintLayout);
     }
 
-    public void showSearchTextView(boolean isVisible){
-        mTextView.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
-    }
-
     public void showProgressBar(boolean visibility) {
         mProgressBar.setVisibility(visibility ? View.VISIBLE : View.INVISIBLE);
     }

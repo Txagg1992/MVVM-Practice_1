@@ -3,13 +3,11 @@ package com.curiousapps.mvvm_practice.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import com.curiousapps.mvvm_practice.R;
-import com.curiousapps.mvvm_practice.models.SchoolList;
 
 public class WebViewActivity extends AppCompatActivity {
     private static final String TAG = "WebViewActivity";

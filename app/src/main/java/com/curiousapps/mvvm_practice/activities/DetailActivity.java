@@ -204,7 +204,4 @@ public class DetailActivity extends BaseActivity {
         });
     }
 
-    private void nothing() {
-        TestClient.getInstance().checkSingleItemFromListRetrofit();
-    }
 }

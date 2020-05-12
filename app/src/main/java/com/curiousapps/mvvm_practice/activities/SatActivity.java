@@ -1,21 +1,17 @@
 package com.curiousapps.mvvm_practice.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.curiousapps.mvvm_practice.R;
 import com.curiousapps.mvvm_practice.models.SchoolList;
 import com.curiousapps.mvvm_practice.models.SchoolSAT;
-import com.curiousapps.mvvm_practice.requests.SchoolApiClient;
 import com.curiousapps.mvvm_practice.viewModels.SatViewModel;
 
 import java.util.List;
@@ -96,14 +92,10 @@ public class SatActivity extends BaseActivity {
         satMathAverage.setText("");
         if (!errorMessage.equals("")){
             satErrorContainer.setText(errorMessage);
-        }else {
-            satErrorContainer.setText("This school has not reported any SAT scores for the given year.");
         }
 
         showParent();
         showProgressBar(false);
-        //satErrorContainer.setText("This school has not reported any SAT scores for the given year.");
-
     }
 
     private void setSatProperties(List<SchoolSAT> schoolSATS){

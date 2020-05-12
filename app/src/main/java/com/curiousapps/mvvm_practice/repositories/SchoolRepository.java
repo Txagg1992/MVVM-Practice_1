@@ -8,7 +8,6 @@ import androidx.lifecycle.Observer;
 import com.curiousapps.mvvm_practice.models.SchoolList;
 import com.curiousapps.mvvm_practice.models.SchoolSAT;
 import com.curiousapps.mvvm_practice.requests.SchoolApiClient;
-import com.curiousapps.mvvm_practice.util.Constants;
 
 import java.util.List;
 

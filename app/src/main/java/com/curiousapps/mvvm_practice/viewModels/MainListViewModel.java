@@ -1,7 +1,6 @@
 package com.curiousapps.mvvm_practice.viewModels;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.curiousapps.mvvm_practice.models.SchoolList;

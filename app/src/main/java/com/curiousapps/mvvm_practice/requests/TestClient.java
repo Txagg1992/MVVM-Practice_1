@@ -18,7 +18,6 @@ import retrofit2.Response;
 import static com.curiousapps.mvvm_practice.util.Constants.APP_TOKEN;
 import static com.curiousapps.mvvm_practice.util.Constants.LIMIT;
 import static com.curiousapps.mvvm_practice.util.Constants.OFFSET;
-import static com.curiousapps.mvvm_practice.util.Constants.PER_PAGE;
 
 public class TestClient {
     private static final String TAG = "TestClient";
@@ -67,40 +66,7 @@ public class TestClient {
         });
     }
 
-//    public void checkSchoolListResponse(){
-//        SchoolApi schoolApi = ServiceGenerator.getSchoolApi();
-//        Log.d(TAG, "Clicked for ApiSchoolListResponse" + schoolApi);
-//        Call<SchoolListResponse> responseCall = schoolApi.searchSchoolsList(
-//                APP_TOKEN,
-//                LIMIT,
-//                PER_PAGE
-//        );
-//        responseCall.enqueue(new Callback<SchoolListResponse>() {
-//            @Override
-//            public void onResponse(Call<SchoolListResponse> call, Response<SchoolListResponse> response) {
-//                Log.d(TAG, "OnResponse: Server: " + response.toString());
-//                Log.d(TAG, "<<onResponse>>: Code: " + response.code());
-//                if (response.code() == 200){
-//                    Log.d(TAG, "Response body" + response.body());
-//                    List<SchoolList> schoolLists = new ArrayList<>(response.body().getSchoolList());
-//                    for (SchoolList schoolList: schoolLists){
-//                        Log.d(TAG, " SchoolName: " + schoolList.getSchool_name());
-//                    }
-//                }else {
-//                    try {
-//                        Log.d(TAG, "Response Error: " + response.errorBody().string());
-//                    } catch (IOException ex) {
-//                        ex.printStackTrace();
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<SchoolListResponse> call, Throwable t) {
-//
-//            }
-//        });
-//    }
+
     public void checkSchoolListRetrofit() {
         SchoolApi schoolApi = ServiceGenerator.getSchoolApi();
         Log.d(TAG, "Clicked for ListApi: " + schoolApi);

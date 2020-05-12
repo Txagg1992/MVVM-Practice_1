@@ -43,12 +43,6 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
         testRetrofitReqs();
 
         setSupportActionBar(findViewById(R.id.tool_bar));
-//        findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                testRetrofitReqs();
-//            }
-//        });
     }
 
     private void subscribeObservers(){
@@ -126,7 +120,6 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.action_schools){
-            //searchSchoolsApi(1);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }

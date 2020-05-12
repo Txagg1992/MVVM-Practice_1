@@ -1,9 +1,7 @@
 package com.curiousapps.mvvm_practice.adapters;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,17 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuView;
-import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.curiousapps.mvvm_practice.R;
 import com.curiousapps.mvvm_practice.activities.WebViewActivity;
 import com.curiousapps.mvvm_practice.models.SchoolList;
-import com.curiousapps.mvvm_practice.util.Constants;
 
 import java.util.ArrayList;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 public class SchoolRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
