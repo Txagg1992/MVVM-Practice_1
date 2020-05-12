@@ -74,6 +74,9 @@ public class SchoolRepository {
     public LiveData<Boolean> isSchoolRequestTimedOut() {
         return mSchoolApiClient.isSchoolRequestTimedOut();
     }
+    public LiveData<Boolean> isSchoolSatRequestTimedOut() {
+        return mSchoolApiClient.isSchoolSatRequestTimedOut();
+    }
 
     public void searchSingleSchoolApi(String dbn){
         mSchoolApiClient.searchSingleSchoolApi(dbn);

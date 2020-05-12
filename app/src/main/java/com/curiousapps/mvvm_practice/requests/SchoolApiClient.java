@@ -32,6 +32,7 @@ public class SchoolApiClient {
     private MutableLiveData<List<SchoolList>> mSchool;
     private MutableLiveData<List<SchoolSAT>> mSchoolSAT;
     private MutableLiveData<Boolean> mSchoolRequestTimeout = new MutableLiveData<>();
+    private MutableLiveData<Boolean> mSchoolSatRequestTimeout = new MutableLiveData<>();
 
     private RetrieveSchoolListRunnable mRetrieveSchoolListRunnable;
     private RetrieveSchoolRunnable mRetrieveSchoolRunnable;
@@ -63,6 +64,9 @@ public class SchoolApiClient {
     }
     public LiveData<Boolean> isSchoolRequestTimedOut() {
         return mSchoolRequestTimeout;
+    }
+    public LiveData<Boolean> isSchoolSatRequestTimedOut() {
+        return mSchoolSatRequestTimeout;
     }
 
     public void searchSchoolsApi(int pageNumber) {
@@ -105,10 +109,11 @@ public class SchoolApiClient {
         mRetrieveSchoolSatRunnable = new RetrieveSchoolSatRunnable(dbn);
         final Future handler = AppExecutors.getInstance().networkIO().submit(mRetrieveSchoolSatRunnable);
 
+        mSchoolSatRequestTimeout.setValue(false);
         AppExecutors.getInstance().networkIO().schedule(new Runnable() {
             @Override
             public void run() {
-
+                mSchoolSatRequestTimeout.postValue(true);
                 handler.cancel(true);
             }
         }, NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
