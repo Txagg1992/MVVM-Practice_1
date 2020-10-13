@@ -71,7 +71,7 @@ public class MainActivity extends BaseActivity implements OnSchoolListListener {
     }
 
     private void initRecyclerView(){
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mSchoolRecyclerViewAdapter = new SchoolRecyclerViewAdapter(this);
         mRecyclerView.setAdapter(mSchoolRecyclerViewAdapter);
 
